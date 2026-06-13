@@ -1,0 +1,136 @@
+generator client {
+    provider = "prisma-client-js"
+    binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+    output = "/home/ubuntu/legal_connect/nextjs_space/node_modules/.prisma/client"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  phone         String?
+  passwordHash  String?
+  role          String    @default("client")
+  country       String?
+  state         String?
+  city          String?
+  image         String?
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts        Account[]
+  sessions        Session[]
+  lawyerProfile   LawyerProfile?
+  cases           Case[]
+  recommendations CaseRecommendation[]
+}
+
+model LawyerProfile {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  lawFirm               String?
+  barRegistrationNumber  String?
+  yearsExperience       Int      @default(0)
+  practiceAreas         Json     @default("[]")
+  bio                   String?  @db.Text
+  consultationFee       Float?
+  officeAddress         String?
+  languagesSpoken       Json     @default("[\"English\"]")
+  profilePhotoUrl       String?
+  profilePhotoPath      String?
+  profilePhotoIsPublic  Boolean  @default(true)
+  rating                Float    @default(5.0)
+  totalCasesCompleted   Int      @default(0)
+  verificationStatus    String   @default("approved")
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user              User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recommendations   CaseRecommendation[]
+}
+
+model Case {
+  id                          String   @id @default(cuid())
+  clientId                    String
+  title                       String
+  description                 String   @db.Text
+  legalCategory               String
+  urgencyLevel                String   @default("Normal")
+  budgetRange                 String?
+  country                     String?
+  state                       String?
+  city                        String?
+  preferredConsultationMethod String?
+  status                      String   @default("submitted")
+  supportingDocuments         Json     @default("[]")
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
+
+  client          User                 @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  recommendations CaseRecommendation[]
+}
+
+model CaseRecommendation {
+  id              String   @id @default(cuid())
+  caseId          String
+  lawyerId        String
+  lawyerProfileId String
+  matchPercentage Float
+  matchReason     String   @db.Text
+  rank            Int
+  createdAt       DateTime @default(now())
+
+  case          Case          @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  lawyer        User          @relation(fields: [lawyerId], references: [id], onDelete: Cascade)
+  lawyerProfile LawyerProfile @relation(fields: [lawyerProfileId], references: [id], onDelete: Cascade)
+}
+
+model ContactSubmission {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String   @db.Text
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+}
