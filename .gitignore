@@ -18,3 +18,17 @@ out
 .deploy
 .logs
 *.tsbuildinfo
+
+# Environment files
+nextjs_space/.env
+.env
+
+# Symlinks
+nextjs_space/package.json
+nextjs_space/yarn.lock
+
+.deploy/
+.logs/
+
+nextjs_space/.yarn/
+nextjs_space/tsconfig.tsbuildinfo
