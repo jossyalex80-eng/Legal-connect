@@ -9,13 +9,9 @@ neonConfig.webSocketConstructor = require('ws');
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
 function createPrismaClient(): PrismaClient {
-  const connectionString = process.env.DATABASE_URL;
-
-  if (!connectionString) {
-    throw new Error(
-      `DATABASE_URL environment variable is not set. Available env vars: ${Object.keys(process.env).filter(k => k.startsWith('DB') || k.startsWith('NEXT') || k.startsWith('POSTGRES')).join(', ')}`
-    );
-  }
+  const connectionString =
+    process.env.DATABASE_URL ||
+    'postgresql://neondb_owner:npg_wT6XRd5xQMuI@ep-fragrant-glitter-zag5k8ge-pooler.c-2.eu-west-2.aws.neon.tech/neondb?sslmode=require';
 
   const pool = new Pool({ connectionString });
   const adapter = new PrismaNeon(pool);
