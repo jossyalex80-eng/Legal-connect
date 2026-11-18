@@ -2,16 +2,21 @@ import { PrismaClient } from '@prisma/client';
 import { PrismaNeon } from '@prisma/adapter-neon';
 import { neonConfig, Pool } from '@neondatabase/serverless';
 
-// Required for Neon serverless in Node.js environments (Vercel serverless functions)
-if (typeof WebSocket === 'undefined') {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  neonConfig.webSocketConstructor = require('ws');
-}
+// Use ws for WebSocket in Node.js (Vercel serverless)
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+neonConfig.webSocketConstructor = require('ws');
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
-function createPrismaClient() {
-  const connectionString = process.env.DATABASE_URL!;
+function createPrismaClient(): PrismaClient {
+  const connectionString = process.env.DATABASE_URL;
+
+  if (!connectionString) {
+    throw new Error(
+      `DATABASE_URL environment variable is not set. Available env vars: ${Object.keys(process.env).filter(k => k.startsWith('DB') || k.startsWith('NEXT') || k.startsWith('POSTGRES')).join(', ')}`
+    );
+  }
+
   const pool = new Pool({ connectionString });
   const adapter = new PrismaNeon(pool);
   return new PrismaClient({ adapter });
