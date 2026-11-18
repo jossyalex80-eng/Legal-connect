@@ -5,11 +5,7 @@ const nextConfig = {
   distDir: process.env.NEXT_DIST_DIR || '.next',
   output: process.env.NEXT_OUTPUT_MODE,
   productionBrowserSourceMaps: false,
-  experimental: {
-    // On Vercel rootDirectory=nextjs_space, so __dirname IS the root — no need to go up.
-    // Locally (monorepo), go up one level to pick up yarn.lock at the repo root.
-    outputFileTracingRoot: process.env.VERCEL ? __dirname : path.join(__dirname, '../'),
-  },
+  experimental: {},
   eslint: {
     ignoreDuringBuilds: true,
   },
