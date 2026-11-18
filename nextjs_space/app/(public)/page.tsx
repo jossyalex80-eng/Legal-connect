@@ -1,15 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, useReducedMotion, AnimatePresence } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import {
-  Scale, Brain, ShieldCheck, MessageSquare, FileSearch, Upload, Star,
+  Brain, ShieldCheck, MessageSquare, FileSearch, Star,
   ArrowRight, ChevronDown, ChevronUp, Search, Sparkles, Users, BookOpen,
-  CheckCircle, Gavel, Building2, Award, Lock, Phone, Mail, MapPin,
-  TrendingUp, Clock, Globe, Heart, Briefcase, UserCheck, Zap, Menu, X,
+  CheckCircle, Gavel, Building2, Award, Lock,
+  TrendingUp, Clock, Globe, Heart, Briefcase, UserCheck, Zap,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -194,113 +194,6 @@ const faqs = [
 ];
 
 /* ─────────────────────────────────────────────────────────────
-   Navbar
-───────────────────────────────────────────────────────────── */
-function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  return (
-    <header
-      className={`fixed top-0 z-50 w-full transition-all duration-300 ${
-        scrolled ? 'bg-white/95 shadow-sm backdrop-blur-sm' : 'bg-transparent'
-      }`}
-    >
-      <div className="mx-auto flex max-w-[1200px] items-center justify-between px-4 py-4">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-900">
-            <Scale className="h-5 w-5 text-amber-400" />
-          </div>
-          <span className={`font-display text-lg font-bold ${scrolled ? 'text-blue-900' : 'text-white'}`}>
-            Call Legal Connect
-          </span>
-        </Link>
-
-        {/* Desktop nav */}
-        <nav className="hidden items-center gap-6 md:flex">
-          {(['Find a Lawyer', 'How It Works', 'Specialisations', 'For Lawyers'] as const).map((item) => (
-            <Link
-              key={item}
-              href={item === 'Find a Lawyer' ? '/lawyers' : item === 'For Lawyers' ? '/auth/register?role=lawyer' : '#'}
-              className={`text-sm font-medium transition-colors hover:text-amber-400 ${
-                scrolled ? 'text-gray-600' : 'text-blue-100'
-              }`}
-            >
-              {item}
-            </Link>
-          ))}
-        </nav>
-
-        {/* Desktop CTA */}
-        <div className="hidden items-center gap-3 md:flex">
-          <Link href="/auth/login">
-            <Button
-              variant="ghost"
-              size="sm"
-              className={scrolled ? 'text-gray-700 hover:text-blue-900' : 'text-white hover:bg-white/10'}
-            >
-              Log In
-            </Button>
-          </Link>
-          <Link href="/auth/register">
-            <Button size="sm" className="bg-amber-500 text-blue-950 hover:bg-amber-400">
-              Get Started
-            </Button>
-          </Link>
-        </div>
-
-        {/* Mobile menu toggle */}
-        <button
-          className="flex md:hidden"
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle menu"
-        >
-          {menuOpen ? (
-            <X className={`h-6 w-6 ${scrolled ? 'text-blue-900' : 'text-white'}`} />
-          ) : (
-            <Menu className={`h-6 w-6 ${scrolled ? 'text-blue-900' : 'text-white'}`} />
-          )}
-        </button>
-      </div>
-
-      {/* Mobile menu */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden border-t border-blue-800/20 bg-white md:hidden"
-          >
-            <nav className="flex flex-col gap-1 px-4 py-4">
-              <Link href="/lawyers" className="rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50">Find a Lawyer</Link>
-              <Link href="#how-it-works" className="rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50">How It Works</Link>
-              <Link href="#specialisations" className="rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50">Specialisations</Link>
-              <Link href="/auth/register?role=lawyer" className="rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50">For Lawyers</Link>
-              <div className="mt-2 flex gap-2 border-t border-gray-100 pt-3">
-                <Link href="/auth/login" className="flex-1">
-                  <Button variant="outline" size="sm" className="w-full">Log In</Button>
-                </Link>
-                <Link href="/auth/register" className="flex-1">
-                  <Button size="sm" className="w-full bg-amber-500 text-blue-950 hover:bg-amber-400">Get Started</Button>
-                </Link>
-              </div>
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </header>
-  );
-}
-
-/* ─────────────────────────────────────────────────────────────
    AI Process Visualiser
 ───────────────────────────────────────────────────────────── */
 function AIVisualiser() {
@@ -375,11 +268,8 @@ export default function HomePage() {
 
   return (
     <div className="bg-white">
-      {/* ── 1. Navbar ──────────────────────────────────────────── */}
-      <Navbar />
-
-      {/* ── 2. Hero ────────────────────────────────────────────── */}
-      <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 pt-20">
+      {/* ── 1. Hero ────────────────────────────────────────────── */}
+      <section className="relative min-h-[calc(100vh-64px)] overflow-hidden bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800">
         {/* Background decorations */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-amber-400/5 blur-3xl" />
@@ -1015,86 +905,6 @@ export default function HomePage() {
         </AnimatedSection>
       </section>
 
-      {/* ── 13. Footer ───────────────────────────────────────── */}
-      <footer className="bg-blue-950 text-blue-200">
-        <div className="mx-auto max-w-[1200px] px-4 py-16">
-          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
-            {/* Brand */}
-            <div className="sm:col-span-2 lg:col-span-1">
-              <Link href="/" className="mb-4 flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-800">
-                  <Scale className="h-5 w-5 text-amber-400" />
-                </div>
-                <span className="font-display text-lg font-bold text-white">Call Legal Connect</span>
-              </Link>
-              <p className="max-w-xs text-sm leading-relaxed text-blue-300/70">
-                Nigeria&apos;s AI-powered legal marketplace — connecting people with verified legal professionals across the country.
-              </p>
-              <div className="mt-5 flex items-center gap-3">
-                <a href="mailto:support@calllegalconnect.com" className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-900 text-blue-300 transition-colors hover:bg-blue-800 hover:text-white" aria-label="Email">
-                  <Mail className="h-4 w-4" />
-                </a>
-                <a href="tel:+234" className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-900 text-blue-300 transition-colors hover:bg-blue-800 hover:text-white" aria-label="Phone">
-                  <Phone className="h-4 w-4" />
-                </a>
-                <a href="#" className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-900 text-blue-300 transition-colors hover:bg-blue-800 hover:text-white" aria-label="Location">
-                  <MapPin className="h-4 w-4" />
-                </a>
-              </div>
-            </div>
-
-            {/* Platform */}
-            <div>
-              <h4 className="mb-4 text-sm font-semibold uppercase tracking-widest text-white">Platform</h4>
-              <ul className="space-y-2.5 text-sm">
-                {['Find a Lawyer', 'Browse by Practice Area', 'AI Matching', 'How It Works', 'Pricing'].map((item) => (
-                  <li key={item}>
-                    <Link href={item === 'Find a Lawyer' ? '/lawyers' : '#'} className="text-blue-300/70 transition-colors hover:text-white">
-                      {item}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* For Lawyers */}
-            <div>
-              <h4 className="mb-4 text-sm font-semibold uppercase tracking-widest text-white">For Lawyers</h4>
-              <ul className="space-y-2.5 text-sm">
-                {['Join the Platform', 'Lawyer Dashboard', 'Manage Profile', 'Get Clients', 'Support'].map((item) => (
-                  <li key={item}>
-                    <Link href={item === 'Join the Platform' ? '/auth/register?role=lawyer' : item === 'Lawyer Dashboard' ? '/dashboard' : '#'} className="text-blue-300/70 transition-colors hover:text-white">
-                      {item}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Legal */}
-            <div>
-              <h4 className="mb-4 text-sm font-semibold uppercase tracking-widest text-white">Company</h4>
-              <ul className="space-y-2.5 text-sm">
-                {['About Us', 'Privacy Policy', 'Terms of Service', 'Cookie Policy', 'Contact Us'].map((item) => (
-                  <li key={item}>
-                    <Link href="#" className="text-blue-300/70 transition-colors hover:text-white">
-                      {item}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Bottom bar */}
-          <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-blue-900 pt-8 text-xs text-blue-400/60 sm:flex-row">
-            <p>© {new Date().getFullYear()} Call Legal Connect. All rights reserved.</p>
-            <p className="text-center sm:text-right">
-              Call Legal Connect is a technology platform. It is not a law firm and does not provide legal advice.
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
