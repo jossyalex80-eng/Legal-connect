@@ -2,16 +2,28 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { FileText, PlusCircle, Users, ArrowRight, Briefcase, Clock, CheckCircle, AlertTriangle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function DashboardPage() {
-  const { data: session } = useSession() || {};
+  const { data: session, status } = useSession() || {};
+  const router = useRouter();
   const [cases, setCases] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const role = (session?.user as any)?.role ?? 'client';
+
+  // Role-based redirect: lawyers and admins have dedicated dashboard pages
+  useEffect(() => {
+    if (status === 'loading') return;
+    if (role === 'admin') {
+      router.replace('/dashboard/admin');
+    } else if (role === 'lawyer') {
+      router.replace('/dashboard/lawyer');
+    }
+  }, [role, status, router]);
 
   useEffect(() => {
     const fetchCases = async () => {

@@ -1,29 +1,41 @@
 export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
     const lawyer = await prisma.user.findFirst({
-      where: { id: params?.id, role: 'lawyer' },
+      where: {
+        id: params?.id,
+        role: 'lawyer',
+        // Only surface approved lawyers publicly
+        lawyerProfile: { is: { verificationStatus: 'approved' } },
+      },
       include: { lawyerProfile: true },
     });
 
-    if (!lawyer) {
+    if (!lawyer || !lawyer.lawyerProfile) {
       return NextResponse.json({ error: 'Lawyer not found' }, { status: 404 });
     }
+
+    // Email and phone are only returned to authenticated users (clients or the lawyer themselves)
+    const session = await getServerSession(authOptions);
+    const isAuthenticated = !!session?.user;
 
     return NextResponse.json({
       id: lawyer.id,
       name: lawyer.name,
-      email: lawyer.email,
-      phone: lawyer.phone,
+      // Sensitive contact info — authenticated only
+      ...(isAuthenticated && { email: lawyer.email }),
+      ...(isAuthenticated && lawyer.phone ? { phone: lawyer.phone } : {}),
       country: lawyer.country,
       state: lawyer.state,
       city: lawyer.city,
       image: lawyer.image,
-      lawyerProfile: lawyer.lawyerProfile ? {
+      lawyerProfile: {
         id: lawyer.lawyerProfile.id,
         lawFirm: lawyer.lawyerProfile.lawFirm,
         yearsExperience: lawyer.lawyerProfile.yearsExperience,
@@ -37,7 +49,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
         languagesSpoken: lawyer.lawyerProfile.languagesSpoken,
         officeAddress: lawyer.lawyerProfile.officeAddress,
         verificationStatus: lawyer.lawyerProfile.verificationStatus,
-      } : null,
+      },
     });
   } catch (error: any) {
     console.error('Lawyer detail error:', error);

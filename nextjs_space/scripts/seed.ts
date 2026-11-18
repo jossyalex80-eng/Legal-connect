@@ -6,7 +6,21 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Seeding database...');
 
-  // Test account
+  // Admin account — CHANGE PASSWORD BEFORE GOING LIVE
+  const adminHash = await bcrypt.hash('admin123', 12);
+  await prisma.user.upsert({
+    where: { email: 'admin@legalconnect.com' },
+    update: {},
+    create: {
+      email: 'admin@legalconnect.com',
+      name: 'Platform Admin',
+      passwordHash: adminHash,
+      role: 'admin',
+      country: 'Nigeria',
+    },
+  });
+
+  // Test client account
   const passwordHash = await bcrypt.hash('johndoe123', 12);
   await prisma.user.upsert({
     where: { email: 'john@doe.com' },
@@ -177,6 +191,8 @@ async function main() {
         rating: l.rating,
         totalCasesCompleted: l.totalCasesCompleted,
         languagesSpoken: l.languagesSpoken,
+        // 'approved' here is intentional for seed/demo data only.
+        // Real lawyer registrations default to 'pending' and require admin approval.
         verificationStatus: 'approved',
       },
     });

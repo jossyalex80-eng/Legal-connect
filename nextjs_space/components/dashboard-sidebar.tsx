@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-import { Scale, LayoutDashboard, FileText, Users, User, Settings, LogOut, Menu, X, PlusCircle, Briefcase } from 'lucide-react';
+import { Scale, LayoutDashboard, FileText, Users, User, Settings, LogOut, Menu, X, PlusCircle, Briefcase, Shield, UserCheck } from 'lucide-react';
 
 export function DashboardSidebar() {
   const { data: session } = useSession() || {};
@@ -20,12 +20,18 @@ export function DashboardSidebar() {
   ];
 
   const lawyerLinks = [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/dashboard/lawyer', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/dashboard/case-matches', label: 'Case Matches', icon: Briefcase },
     { href: '/dashboard/profile', label: 'Profile Settings', icon: Settings },
   ];
 
-  const links = role === 'lawyer' ? lawyerLinks : clientLinks;
+  const adminLinks = [
+    { href: '/dashboard/admin', label: 'Overview', icon: LayoutDashboard },
+    { href: '/dashboard/admin/lawyers', label: 'Lawyer Verification', icon: UserCheck },
+    { href: '/dashboard/admin/users', label: 'User Management', icon: Users },
+  ];
+
+  const links = role === 'admin' ? adminLinks : role === 'lawyer' ? lawyerLinks : clientLinks;
 
   const NavContent = () => (
     <>
@@ -36,6 +42,9 @@ export function DashboardSidebar() {
           </div>
           <span className="font-display text-lg font-bold text-blue-900">Legal<span className="text-amber-500">Connect</span></span>
         </Link>
+        {role === 'admin' && (
+          <span className="ml-auto rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-amber-700">Admin</span>
+        )}
       </div>
 
       <nav className="flex-1 space-y-1">

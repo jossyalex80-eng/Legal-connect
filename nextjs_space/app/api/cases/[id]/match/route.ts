@@ -27,10 +27,12 @@ export async function POST(request: Request, { params }: { params: { id: string 
     });
 
     // Get all approved lawyers with profiles
-    const lawyers: any[] = await prisma.user.findMany({
+    const lawyers = await prisma.user.findMany({
       where: {
         role: 'lawyer',
-        lawyerProfile: { isNot: null, verificationStatus: 'approved' as any },
+        lawyerProfile: {
+          is: { verificationStatus: 'approved' },
+        },
       },
       include: { lawyerProfile: true },
     });
@@ -41,9 +43,10 @@ export async function POST(request: Request, { params }: { params: { id: string 
     }
 
     // Build lawyer summaries for LLM
-    const lawyerSummaries = lawyers.map((l: any, idx: number) => {
-      const p = l?.lawyerProfile;
-      return `Lawyer ${idx + 1} (ID: ${l?.id}):\n- Name: ${l?.name}\n- Practice Areas: ${JSON.stringify(p?.practiceAreas ?? [])}\n- Experience: ${p?.yearsExperience ?? 0} years\n- Location: ${l?.city ?? ''}, ${l?.state ?? ''}, ${l?.country ?? ''}\n- Rating: ${p?.rating ?? 5}/5\n- Fee: ${p?.consultationFee ?? 'Not specified'}\n- Bio: ${p?.bio ?? 'N/A'}`;
+    const lawyerSummaries = lawyers.map((l, idx) => {
+      const p = l.lawyerProfile;
+      const areas = Array.isArray(p?.practiceAreas) ? p.practiceAreas : [];
+      return `Lawyer ${idx + 1} (ID: ${l.id}):\n- Name: ${l.name ?? 'N/A'}\n- Practice Areas: ${JSON.stringify(areas)}\n- Experience: ${p?.yearsExperience ?? 0} years\n- Location: ${l.city ?? ''}, ${l.state ?? ''}, ${l.country ?? ''}\n- Rating: ${p?.rating ?? 5}/5\n- Fee: ${p?.consultationFee ?? 'Not specified'}\n- Bio: ${p?.bio ?? 'N/A'}`;
     }).join('\n\n');
 
     const systemPrompt = `You are a legal AI matchmaker. Given a client's case and available lawyers, select the top 3 best-matched lawyers and explain why each is a good match.
@@ -125,7 +128,7 @@ Always return exactly 3 matches ranked 1-3. Match percentages should be between 
 
                     // Create recommendations
                     for (const match of matches) {
-                      const lawyer = lawyers.find((l: any) => l?.id === match?.lawyerId);
+                      const lawyer = lawyers.find((l) => l.id === match?.lawyerId);
                       if (lawyer?.lawyerProfile) {
                         await prisma.caseRecommendation.create({
                           data: {

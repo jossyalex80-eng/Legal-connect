@@ -51,11 +51,9 @@ const features = [
   { icon: Star, title: 'Reviews & Ratings', desc: 'Make informed choices with verified lawyer ratings. (Coming soon)' },
 ];
 
-const testimonials = [
-  { name: 'Chukwuemeka Obi', role: 'Business Owner', image: 'https://cdn.abacus.ai/images/f44cc483-8e8e-4d9e-bc69-66d4872c7571.png', text: 'Legal Connect matched me with a corporate lawyer in under 5 minutes. The AI recommendation was spot-on and saved me weeks of searching.', rating: 5 },
-  { name: 'Amina Ibrahim', role: 'Entrepreneur', image: 'https://cdn.abacus.ai/images/c8bb69f9-615b-4445-880f-cd9f7a0ebadb.png', text: 'I was dealing with a property dispute and needed urgent help. The platform connected me with an excellent property lawyer near my location.', rating: 5 },
-  { name: 'David Adeyemi', role: 'Tech Professional', image: 'https://cdn.abacus.ai/images/700e9606-508f-4d95-a742-f2a89e689218.png', text: 'The AI matching system is incredibly accurate. It understood my intellectual property needs and recommended lawyers with the exact specialization.', rating: 5 },
-];
+// Testimonials will be loaded from real verified users in a future update.
+// Do not add fake or invented testimonials here.
+const testimonials: { name: string; role: string; text: string; rating: number }[] = [];
 
 const faqs = [
   { q: 'How does the AI matching work?', a: 'Our AI analyzes your case description, legal category, location, and budget to match you with lawyers who have the most relevant expertise and experience. It scores each lawyer based on practice area match, experience, location proximity, and ratings.' },
@@ -183,34 +181,36 @@ export default function HomePage() {
         </div>
       </AnimatedSection>
 
-      {/* Testimonials */}
-      <AnimatedSection className="mx-auto max-w-[1200px] px-4 py-20">
-        <motion.div variants={fadeUp} className="text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest text-amber-600">Testimonials</p>
-          <h2 className="mt-2 font-display text-3xl font-bold tracking-tight text-blue-900 md:text-4xl">What Clients Say</h2>
-        </motion.div>
-        <div className="mt-14 grid gap-8 md:grid-cols-3">
-          {testimonials.map((t, i) => (
-            <motion.div key={i} variants={fadeUp} className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm transition hover:shadow-md">
-              <div className="mb-4 flex gap-1">
-                {Array.from({ length: t.rating }).map((_, s) => (
-                  <Star key={s} className="h-4 w-4 fill-amber-400 text-amber-400" />
-                ))}
-              </div>
-              <p className="mb-6 text-sm leading-relaxed text-gray-600">&quot;{t.text}&quot;</p>
-              <div className="flex items-center gap-3">
-                <div className="relative h-10 w-10 overflow-hidden rounded-full bg-gray-200">
-                  <Image src={t.image} alt={t.name} fill className="object-cover" />
+      {/* Testimonials — shown only when real reviews exist */}
+      {testimonials.length > 0 && (
+        <AnimatedSection className="mx-auto max-w-[1200px] px-4 py-20">
+          <motion.div variants={fadeUp} className="text-center">
+            <p className="text-sm font-semibold uppercase tracking-widest text-amber-600">Testimonials</p>
+            <h2 className="mt-2 font-display text-3xl font-bold tracking-tight text-blue-900 md:text-4xl">What Clients Say</h2>
+          </motion.div>
+          <div className="mt-14 grid gap-8 md:grid-cols-3">
+            {testimonials.map((t, i) => (
+              <motion.div key={i} variants={fadeUp} className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm transition hover:shadow-md">
+                <div className="mb-4 flex gap-1">
+                  {Array.from({ length: t.rating }).map((_, s) => (
+                    <Star key={s} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                  ))}
                 </div>
-                <div>
-                  <p className="text-sm font-semibold text-blue-900">{t.name}</p>
-                  <p className="text-xs text-gray-500">{t.role}</p>
+                <p className="mb-6 text-sm leading-relaxed text-gray-600">&quot;{t.text}&quot;</p>
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-900 font-bold text-sm">
+                    {t.name.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-blue-900">{t.name}</p>
+                    <p className="text-xs text-gray-500">{t.role}</p>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </AnimatedSection>
+              </motion.div>
+            ))}
+          </div>
+        </AnimatedSection>
+      )}
 
       {/* FAQ */}
       <AnimatedSection className="bg-slate-50 py-20">

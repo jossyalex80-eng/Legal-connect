@@ -1,7 +1,6 @@
 generator client {
     provider = "prisma-client-js"
-    binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
-    output = "/home/ubuntu/legal_connect/nextjs_space/node_modules/.prisma/client"
+    binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -81,7 +80,7 @@ model LawyerProfile {
   profilePhotoIsPublic  Boolean  @default(true)
   rating                Float    @default(5.0)
   totalCasesCompleted   Int      @default(0)
-  verificationStatus    String   @default("approved")
+  verificationStatus    String   @default("pending")
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 

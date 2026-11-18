@@ -18,11 +18,15 @@ export async function GET(request: Request) {
     const page = parseInt(searchParams.get('page') ?? '1', 10);
     const limit = parseInt(searchParams.get('limit') ?? '12', 10);
 
+    // Always require approved verification — unapproved lawyers must not appear publicly
+    const profileFilter: any = { verificationStatus: 'approved' };
+    if (minExperience > 0) profileFilter.yearsExperience = { gte: minExperience };
+    if (maxFee > 0) profileFilter.consultationFee = { lte: maxFee };
+    if (minRating > 0) profileFilter.rating = { gte: minRating };
+
     const where: any = {
       role: 'lawyer',
-      lawyerProfile: {
-        isNot: null,
-      },
+      lawyerProfile: { is: profileFilter },
     };
 
     if (search) {
@@ -36,16 +40,6 @@ export async function GET(request: Request) {
     if (country) where.country = country;
     if (state) where.state = state;
     if (city) where.city = city;
-
-    if (minExperience > 0) {
-      where.lawyerProfile = { ...where.lawyerProfile, yearsExperience: { gte: minExperience } };
-    }
-    if (maxFee > 0) {
-      where.lawyerProfile = { ...where.lawyerProfile, consultationFee: { lte: maxFee } };
-    }
-    if (minRating > 0) {
-      where.lawyerProfile = { ...where.lawyerProfile, rating: { gte: minRating } };
-    }
 
     let orderBy: any = { lawyerProfile: { rating: 'desc' } };
     if (sortBy === 'experience') orderBy = { lawyerProfile: { yearsExperience: 'desc' } };
