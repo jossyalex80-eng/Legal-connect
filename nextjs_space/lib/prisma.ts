@@ -8,8 +8,12 @@ neonConfig.webSocketConstructor = require('ws');
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
-// Use || not ?? so that empty string also falls back to hardcoded URL
-const DB_URL = process.env.DATABASE_URL || 'postgresql://neondb_owner:npg_wT6XRd5xQMuI@ep-fragrant-glitter-zag5k8ge-pooler.c-2.eu-west-2.aws.neon.tech/neondb?sslmode=require';
+const NEON_URL = 'postgresql://neondb_owner:npg_wT6XRd5xQMuI@ep-fragrant-glitter-zag5k8ge-pooler.c-2.eu-west-2.aws.neon.tech/neondb?sslmode=require';
+
+// Use || so empty string also falls back
+const DB_URL = (process.env.DATABASE_URL && process.env.DATABASE_URL.startsWith('postgresql'))
+  ? process.env.DATABASE_URL
+  : NEON_URL;
 
 const pool = new Pool({ connectionString: DB_URL });
 const adapter = new PrismaNeon(pool);
